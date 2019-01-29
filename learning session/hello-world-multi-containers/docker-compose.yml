@@ -1,0 +1,12 @@
+version: "3"
+services:
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - 8081:8081
+  redis-server:
+    image: redis
