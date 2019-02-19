@@ -8,7 +8,7 @@ const redisClient = redis.createClient({
 });
 const sub = redisClient.duplicate();
 
-function fib(teamMemberName) {
+function getMemberPhrase(teamMemberName) {
     console.log(teamMemberName);
     switch (teamMemberName) {
         case 'omri' :
@@ -29,14 +29,12 @@ function fib(teamMemberName) {
             return 'מאז שאני אוכל לה סלטה יש לי כאבי בטן .. מזמין לה סלטה';
         case 'guys' :
             return '-10:30 בדיוק- אין דילי?';
-        case 'oleg' :
-            return '- צועק בטון שלדעתו נחמד - חברים אני סיימתי פי איצ די שאתם כתבתם "שלום עולם" בפעם הראשונה';
         default:
             return 'No permissions, go to devops';
     }
 }
 
 sub.on('message', (channel, message) => {
-  redisClient.hset('values', message, fib(message));
+  redisClient.hset('values', message, getMemberPhrase(message));
 });
 sub.subscribe('insert');
