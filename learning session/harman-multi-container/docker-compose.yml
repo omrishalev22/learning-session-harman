@@ -30,6 +30,9 @@ services:
 #      - '65231:65231'
   redis:
     image: 'redis:latest'
+    ports:
+      - '6379:6379'
+
   api:
     build:
       dockerfile: Dockerfile.dev

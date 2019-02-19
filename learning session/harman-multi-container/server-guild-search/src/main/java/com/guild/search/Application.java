@@ -1,8 +1,10 @@
 package com.guild.search;
 
+import com.guild.search.redis.MessagePublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +15,9 @@ public class Application {
 
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
 
+	@Autowired
+	private MessagePublisher redisPublisher;
+
 	public static void main(String[] args) {
 
 		SpringApplication.run(Application.class, args);
@@ -21,6 +26,9 @@ public class Application {
 	@Bean
 	public CommandLineRunner demo(PearlRepository repository) {
 		return (args) -> {
+			if (redisPublisher != null) {
+				log.info("got a publisher");
+			}
 			if (repository.count() == 0) {
 				init(repository);
 				// save a couple of Pearls
