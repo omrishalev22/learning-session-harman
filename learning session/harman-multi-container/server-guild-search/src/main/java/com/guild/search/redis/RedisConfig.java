@@ -1,5 +1,6 @@
 package com.guild.search.redis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +35,12 @@ public class RedisConfig {
         return template;
     }
 
+    @Autowired RedisMessageSubscriber redisMessageSubscriber;
+
     @Bean
     MessageListenerAdapter messageListener() {
-        return new MessageListenerAdapter(new RedisMessageSubscriber(connection()));
+        return new MessageListenerAdapter(redisMessageSubscriber);
+//        return new MessageListenerAdapter(new RedisMessageSubscriber(connection()));
     }
 
     @Bean
