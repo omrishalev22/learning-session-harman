@@ -66,7 +66,7 @@ app.post('/values', async (req, res) => {
     return res.status(422).send('Index too high');
   }
 
-  redisClient.hset('values', index, 'Nothing yet!');
+  redisClient.hset('values', index, 'Nothing yet! for '+index);
   redisPublisher.publish('insert', index);
   pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [index]);
   res.send({ working: true });
