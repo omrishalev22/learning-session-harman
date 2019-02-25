@@ -44,6 +44,10 @@ app.get('/delete', async (req, res) => {
 
 
 app.get('/values/all', async (req, res) => {
+  pgClient
+      .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
+      .catch(err => console.log(err));
+
   const values = await pgClient.query('SELECT * from TEAM_NAMES ');
   res.send(values.rows);
 });

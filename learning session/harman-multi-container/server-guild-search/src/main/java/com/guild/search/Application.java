@@ -1,22 +1,19 @@
 package com.guild.search;
 
-import com.guild.search.redis.MessagePublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan("com.guild.search")
 public class Application {
 
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
-
-	@Autowired
-	private MessagePublisher redisPublisher;
 
 	public static void main(String[] args) {
 
@@ -26,11 +23,8 @@ public class Application {
 	@Bean
 	public CommandLineRunner demo(PearlRepository repository) {
 		return (args) -> {
-			if (redisPublisher != null) {
-				log.info("got a publisher");
-			}
 			if (repository.count() == 0) {
-				init(repository);
+				loadDb(repository);
 				// save a couple of Pearls
 			}
 
@@ -64,7 +58,7 @@ public class Application {
 		};
 	}
 
-	private void init(PearlRepository repository) {
+	private void loadDb(PearlRepository repository) {
 		repository.save(new Pearl("omri", "מה זה הרעש הזה? רון? חאלס עם המטבעות פוקר האלה, מה יהיה ענת עם ההקלדות, מה זה המוזיקה הזאת"));
 		repository.save(new Pearl("ido", "טוב אני הולך, הייתי נשאר אבל לא בא לי - הוד השרון שולטת"));
 		repository.save(new Pearl("raz", "רז מה הזמנת לאכול? פיאנו פיאנו סניף חדרה"));
