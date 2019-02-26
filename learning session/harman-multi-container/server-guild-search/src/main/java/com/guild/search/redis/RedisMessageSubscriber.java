@@ -41,14 +41,6 @@ public class RedisMessageSubscriber implements MessageListener {
                 con = jedisConnectionFactory.getConnection();
             }
 
-            if (con == null) {
-                log.error("no con - autowiring sucks");
-            }
-
-            if (pearlRepository == null) {
-                con.hSet("values".getBytes(), message.getBody(), (message.toString()+" says: AUTOWIRING SUCKS").getBytes());
-                return;
-            }
             List<Pearl> pearls = pearlRepository.findByName(message.toString());
             if (pearls == null || pearls.isEmpty()) {
                 con.hSet("values".getBytes(), message.getBody(), "שומר על זכות השתיקה".getBytes());
@@ -61,7 +53,7 @@ public class RedisMessageSubscriber implements MessageListener {
             }
 
         } catch (Exception e) {
-            log.error("failure ", e);
+            log.error("RedisMessageSubscriber failure ", e);
         }
     }
 }
