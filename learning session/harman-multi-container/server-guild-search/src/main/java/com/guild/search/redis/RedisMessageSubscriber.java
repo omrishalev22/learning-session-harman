@@ -28,31 +28,40 @@ public class RedisMessageSubscriber implements MessageListener {
     @Autowired
     JedisConnectionFactory jedisConnectionFactory;
 
+    private RedisConnection con;
+
     public RedisMessageSubscriber() {
     }
 
     public void onMessage(final Message message, final byte[] pattern) {
         log.info("Message received: " + new String(message.getBody()));
 
-        RedisConnection con = jedisConnectionFactory.getConnection();
+        try {
+            if (con==null || con.isClosed()) {
+                con = jedisConnectionFactory.getConnection();
+            }
 
-        if (con == null) {
-            log.error("no con - autowiring sucks");
-        }
+            if (con == null) {
+                log.error("no con - autowiring sucks");
+            }
 
-        if (pearlRepository == null) {
-            con.hSet("values".getBytes(), message.getBody(), (message.toString()+" says: AUTOWIRING SUCKS").getBytes());
-            return;
-        }
-        List<Pearl> pearls = pearlRepository.findByName(message.toString());
-        if (pearls == null || pearls.isEmpty()) {
-            con.hSet("values".getBytes(), message.getBody(), "שומר על זכות השתיקה".getBytes());
-            log.info("Value set: name:" + new String(message.getBody()) + " is silent!!!");
-            return;
-        }
-        for (Pearl pearl : pearls) {
-            con.hSet("values".getBytes(), message.getBody(), pearl.getPearl().getBytes());
-            log.info("Value set: name:" + new String(message.getBody()) + " message:"+pearl.getPearl());
+            if (pearlRepository == null) {
+                con.hSet("values".getBytes(), message.getBody(), (message.toString()+" says: AUTOWIRING SUCKS").getBytes());
+                return;
+            }
+            List<Pearl> pearls = pearlRepository.findByName(message.toString());
+            if (pearls == null || pearls.isEmpty()) {
+                con.hSet("values".getBytes(), message.getBody(), "שומר על זכות השתיקה".getBytes());
+                log.info("Value set: name:" + new String(message.getBody()) + " is silent!!!");
+                return;
+            }
+            for (Pearl pearl : pearls) {
+                con.hSet("values".getBytes(), message.getBody(), pearl.getPearl().getBytes());
+                log.info("Value set: name:" + new String(message.getBody()) + " message:"+pearl.getPearl());
+            }
+
+        } catch (Exception e) {
+            log.error("failure ", e);
         }
     }
 }

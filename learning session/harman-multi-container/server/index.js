@@ -66,7 +66,20 @@ app.post('/values', async (req, res) => {
     return res.status(422).send('Index too high');
   }
 
-  redisClient.hset('values', index, 'Nothing yet! for '+index);
+  redisClient.hget( "values", index, function(err, currMsg){
+    //console.log("currMsg="+currMsg);
+    //Do some processing with the value from this field and watch it after
+
+    if(err) {
+      console.log("Error getting value from redis: "+err);
+    }
+
+    console.log("Current Message for "+index+": '"+currMsg+"'");
+    if (!currMsg || currMsg == 'OK') {
+      redisClient.hset('values', index, 'Nada. Please wait.');
+    }
+  } );
+
   redisPublisher.publish('insert', index);
   pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [index]);
   res.send({ working: true });
