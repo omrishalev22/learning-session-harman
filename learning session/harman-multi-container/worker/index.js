@@ -6,7 +6,7 @@ const redisClient = redis.createClient({
   port: keys.redisPort,
   retry_strategy: () => 1000
 });
-const sub = redisClient.duplicate();
+const subscriber = redisClient.duplicate();
 
 function getMemberPhrase(teamMemberName) {
     console.log(teamMemberName);
@@ -34,7 +34,8 @@ function getMemberPhrase(teamMemberName) {
     }
 }
 
-sub.on('message', (channel, message) => {
-  redisClient.hset('values', message, getMemberPhrase(message));
+subscriber.on('message', (channel, username) => {
+  redisClient.hset('values', username, getMemberPhrase(username));
 });
-sub.subscribe('insert');
+
+subscriber.subscribe('search');
