@@ -2,9 +2,8 @@ import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
-import OtherPage from './OtherPage';
-import SearchSection from './SearchSection';
-import AddSection from "./AddSection";
+import SearchSection from './sections/SearchSection';
+import AddSection from "./sections/AddSection";
 
 class App extends Component {
 
@@ -12,16 +11,19 @@ class App extends Component {
         return (
             <Router>
                 <div className="App">
-                    <header className="App-header">
-                        <img src={logo} className="App-logo" alt="logo"/>
-                        <h1 className="App-title">Welcome to React</h1>
-                        <Link className="nav-bar" to="/">Home</Link>
+                    <header className="header">
+                        <h1 className="header__title">Learning Sessions</h1>
                     </header>
-                    <div>
-                        <Route exact path="/" component={SearchSection}/>
-                        <Route exact path="/" component={AddSection}/>
-                        <Route path="/otherpage" component={OtherPage}/>
-                    </div>
+
+                    <main className="main">
+                        <section className="search-section">
+                            <Route exact path="/" component={SearchSection}/>
+                        </section>
+                        <section className="add-section">
+                            <Route exact path="/" component={AddSection}/>
+                        </section>
+                    </main>
+
                 </div>
             </Router>
         );

@@ -19,29 +19,37 @@ class SearchSection extends Component {
     render() {
         return (
             <div>
-                <div>
-                    <h3 className="primary-heading">Examples for searches:</h3>
-                    <p className="examples">omri, ido ,raz , anat , matthew , ron ,guyw , guys , yafit </p>
+                <div className="title">
+                    <h3 className="primary-heading">
+                        Search <span className="title__icon">&#128269;</span>
+                    </h3>
                 </div>
 
                 <form onSubmit={this.handleSubmit}>
-                    <p className="primary-heading">Enter a team member name: </p>
+                    <p className="examples ul-small-margin-bottom">Examples for searches: omri, ido ,raz , anat , matthew , ron ,guyw , guys , yafit </p>
+
                     <input
                         className="form__input"
                         value={this.state.userInput}
+                        placeholder="Enter a team member name"
                         onChange={event => this.setState({userInput: event.target.value, pearl: false})}
                     />
                     <button>Submit</button>
                     <button type="button" onClick={this.deleteAll}>Delete All</button>
                 </form>
 
-                <div className="checked">
-                    <h3>People you already checked out:</h3>
-                    {this.renderAllSearchedValues()}
+                <div className="results">
+                    <div className="results__pearl">
+                        <h3 className="secondary-heading">Result:</h3>
+                        {this.renderPearl()}
+                    </div>
                 </div>
-                <h3>Result:</h3>
-                <div className="box">
-                    {this.renderPearl()}
+
+                <div className="log">
+                    <h3 className="log__title">People you already checked out:</h3>
+                    <div className="log__terminal" key={this.state.searchedValues.toString()}>
+                        {this.renderAllSearchedValues()}
+                    </div>
                 </div>
             </div>
         );
@@ -80,11 +88,9 @@ class SearchSection extends Component {
         const entries = [];
         if (this.state.pearl) {
             entries.push(
-                <div className="box__results" key={this.state.userInput}>
-                    <div className="box-item" key={this.state.userInput}>
-                        <p>Shit {this.state.userInput} will say: </p>
-                        <p className="box-item-value" key={this.state.userInput}>{this.state.pearl}</p>
-                    </div>
+                <div className="results__item" key={this.state.userInput}>
+                    <p>Shit {this.state.userInput} will say: </p>
+                    <p className="box-item-value" key={this.state.userInput}>{this.state.pearl}</p>
                 </div>
             );
             return entries;
@@ -97,9 +103,9 @@ class SearchSection extends Component {
     renderAllSearchedValues() {
         if (this.state.searchedValues) {
             return (
-                <div className="span" key={this.state.searchedValues.toString()}>
+                <span className="log__list" key={this.state.searchedValues.toString()}>
                     {this.state.searchedValues.join(", ")}
-                </div>
+                </span>
             );
         }
         return [];

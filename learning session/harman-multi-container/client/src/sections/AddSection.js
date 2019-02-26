@@ -58,9 +58,9 @@ class AddSection extends Component {
 
   render() {
     return (
-      <div>
+      <div className="title">
         <h3 className="primary-heading">
-          Add a person and a cool phrase on him:
+          Add <span className="title__icon">&#10010;</span>
         </h3>
 
         <form onSubmit={this.handleAddSubmit}>

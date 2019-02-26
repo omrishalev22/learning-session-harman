@@ -1,42 +1,55 @@
+@mixin centerElement {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
 * {
-  box-sizing: border-box;
+  box-sizing:border-box;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+}
 
 body {
   font-size: 10px;
-  font-family: sans-serif; }
+  font-family: sans-serif;
+}
 
 .header {
   text-align: center;
   background-image: linear-gradient(to right bottom, #315790, #447fae, #66a8c9, #93d0e2, #c6f8fd);
-  height: 20vh;
+  height:20vh;
   position: relative;
-  box-shadow: 0.5rem 0.5rem 2rem rgba(0, 0, 0, 0.4); }
-  .header__title {
+  box-shadow: 0.5rem 0.5rem 2rem rgba(0, 0, 0, 0.4);
+
+  &__title {
     font-size: 5rem;
     color: white;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); }
+    @include centerElement;
+  }
+
+}
 
 .main {
   padding: 5rem 0;
   display: table;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); }
-  .main .search-section, .main .add-section {
+  @include centerElement;
+
+  .search-section, .add-section {
     float: left;
     display: table-cell;
     height: 50vh;
-    position: relative; }
-    .main .search-section:not(:last-child), .main .add-section:not(:last-child) {
+    position: relative;
+
+    &:not(:last-child){
       padding-right: 2rem;
       margin-right: 2rem;
-      border-right: 1px solid gray; }
+      border-right: 1px solid gray;
+    }
+  }
+
+}
 
 .log {
   position: absolute;
@@ -45,57 +58,76 @@ body {
   color: #9fff10;
   background: #363636;
   font-size: 1rem;
-  height: 3rem; }
-  .log__list {
-    color: white; }
+  height: 3rem;
+
+  &__list {
+    color: white;
+  }
+}
 
 .results {
-  padding: 5rem 0; }
-  .results__checked-list, .results__pearl {
+  padding: 5rem 0;
+  &__checked-list , &__pearl {
     float: left;
     width: 50%;
-    height: 10rem; }
+    height: 10rem;
+  }
+}
+
+
+// Common utils
 
 .ul-small-margin-bottom {
-  margin-bottom: 1rem; }
-
+  margin-bottom: 1rem;
+}
 .primary-heading {
   text-align: center;
   font-size: 2rem;
-  margin-bottom: 2rem; }
+  margin-bottom: 2rem;
+}
 
 .secondary-heading {
   text-align: center;
   font-size: 1rem;
-  margin-bottom: 1rem; }
+  margin-bottom: 1rem;
+}
 
 .examples {
   color: darkseagreen;
   text-align: center;
   font-size: 1.2rem;
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 .box {
-  padding: .5rem; }
+  padding: .5rem;
+}
+
 
 .box-item {
   margin-bottom: .6rem;
   border-bottom: .2rem solid gray;
   border-top: .2rem solid gray;
   box-shadow: 0 .6rem 1.3rem #e2e2e2;
-  background: antiquewhite; }
+  background: antiquewhite;
+}
 
 .box-item-value {
-  font-weight: bold; }
+  font-weight: bold;
+}
 
 .form__input {
   width: 50rem;
   padding: .5rem;
   display: block;
-  margin: 0 auto .5rem; }
+  margin: 0 auto .5rem;
+}
 
 @keyframes App-logo-spin {
   from {
-    transform: rotate(0deg); }
+    transform: rotate(0deg);
+  }
   to {
-    transform: rotate(360deg); } }
+    transform: rotate(360deg);
+  }
+}
