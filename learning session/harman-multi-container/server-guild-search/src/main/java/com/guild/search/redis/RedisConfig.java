@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,17 +31,6 @@ public class RedisConfig {
         return new JedisConnectionFactory(redisStandaloneConfiguration);
     }
 
-/*
-    @Bean
-    JedisConnectionFactory jedisConnectionFactory() {
-        JedisConnectionFactory factory = new JedisConnectionFactory();
-        factory.setHostName(redisHost);
-        factory.setPort(redisPort);
-        factory.setUsePool(true);
-        return factory;
-    }
-*/
-
     @Bean
     RedisConnection connection() {
         System.out.println("DROR: REDIS config host="+jedisConnectionFactory().getHostName()+" port="+jedisConnectionFactory().getPort());
@@ -61,7 +49,6 @@ public class RedisConfig {
     @Bean
     MessageListenerAdapter messageListener() {
         return new MessageListenerAdapter(redisMessageSubscriber);
-//        return new MessageListenerAdapter(new RedisMessageSubscriber(connection()));
     }
 
     @Bean

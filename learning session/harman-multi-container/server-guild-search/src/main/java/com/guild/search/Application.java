@@ -29,6 +29,8 @@ public class Application {
 				// save a couple of Pearls
 			}
 
+			//the lines below are there just for fun - they kind of test the pearls repository
+
 			// fetch all Pearls
 			log.info("Pearls found with findAll():");
 			log.info("-------------------------------");
@@ -47,14 +49,9 @@ public class Application {
 					});
 
 			// fetch Pearls by last name
-			log.info("Pearl found with findByLastName('Bauer'):");
+			log.info("Pearl found with findByLastName('omri'):");
 			log.info("--------------------------------------------");
-			repository.findByName("Bauer").forEach(bauer -> {
-				log.info(bauer.toString());
-			});
-			// for (Pearl bauer : repository.findByLastName("Bauer")) {
-			// 	log.info(bauer.toString());
-			// }
+			repository.findByName("omri").forEach(pearl -> log.info(pearl.toString()));
 			log.info("");
 		};
 	}
