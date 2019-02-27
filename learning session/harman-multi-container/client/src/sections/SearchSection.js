@@ -19,14 +19,15 @@ class SearchSection extends Component {
     render() {
         return (
             <div>
-                <div className="title">
+                <div className="search-section__title">
                     <h3 className="primary-heading">
-                        Search <span className="title__icon">&#128269;</span>
+                        Search
                     </h3>
                 </div>
 
-                <form onSubmit={this.handleSubmit}>
-                    <p className="examples ul-small-margin-bottom">Examples for searches: omri, ido ,raz , anat , matthew , ron ,guyw , guys , yafit </p>
+                <form className="form" onSubmit={this.handleSubmit}>
+                    <p className="examples ul-small-margin-bottom">Examples for searches: omri, ido ,raz , anat ,
+                        matthew , ron ,guyw , guys , yafit </p>
 
                     <input
                         className="form__input"
@@ -34,20 +35,19 @@ class SearchSection extends Component {
                         placeholder="Enter a team member name"
                         onChange={event => this.setState({userInput: event.target.value, pearl: false})}
                     />
-                    <button>Submit</button>
-                    <button type="button" onClick={this.deleteAll}>Delete All</button>
+                    <input type="submit" className="btn btn--submit" value="Submit"/>
+                    <input type="submit" className="btn btn--delete" value="Delete" onClick={this.deleteAll}/>
                 </form>
 
-                <div className="results">
+                <div className="search-section__results">
                     <div className="results__pearl">
-                        <h3 className="secondary-heading">Result:</h3>
                         {this.renderPearl()}
                     </div>
                 </div>
 
-                <div className="log">
-                    <h3 className="log__title">People you already checked out:</h3>
-                    <div className="log__terminal" key={this.state.searchedValues.toString()}>
+                <div className="logger">
+                    <h3 className="logger__title">People you already checked out:</h3>
+                    <div className="logger__terminal" key={this.state.searchedValues.toString()}>
                         {this.renderAllSearchedValues()}
                     </div>
                 </div>
@@ -62,11 +62,6 @@ class SearchSection extends Component {
     getLoader() {
         return [<div key="loading"> Loading...</div>]
     }
-
-    getNoResult() {
-        return [<div key="no-result-yet"> No Result Yet</div>]
-    }
-
 
     deleteAll = () => {
         axios.get('/api/delete', {});
@@ -88,16 +83,17 @@ class SearchSection extends Component {
         const entries = [];
         if (this.state.pearl) {
             entries.push(
-                <div className="results__item" key={this.state.userInput}>
+                <div>
                     <p>Shit {this.state.userInput} will say: </p>
                     <p className="box-item-value" key={this.state.userInput}>{this.state.pearl}</p>
                 </div>
             );
-            return entries;
+
         } else {
-            return this.getNoResult();
+            entries.push(<div className="results__item ul-small-margin-bottom" key={this.state.userInput}>No Results Yet</div>);
         }
 
+        return entries
     }
 
     renderAllSearchedValues() {
@@ -134,7 +130,6 @@ class SearchSection extends Component {
             }
         });
     }
-
 
 }
 

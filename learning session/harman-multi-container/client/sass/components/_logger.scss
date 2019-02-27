@@ -1,0 +1,11 @@
+.logger {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: greenyellow;
+  font-size: 1rem;
+  padding: 1.5rem 0;
+  &__list {
+    color: white;
+  }
+}

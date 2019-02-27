@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 import SearchSection from './sections/SearchSection';
 import AddSection from "./sections/AddSection";
 
@@ -11,16 +11,19 @@ class App extends Component {
             <Router>
                 <div className="App">
                     <header className="header">
-                        <h1 className="header__title">Learning Sessions</h1>
+                        <h1 className="header__title">Learning Session</h1>
                     </header>
 
                     <main className="main">
-                        <section className="search-section">
-                            <Route exact path="/" component={SearchSection}/>
-                        </section>
-                        <section className="add-section">
-                            <Route exact path="/" component={AddSection}/>
-                        </section>
+                        <div className="row main__sections">
+                            <section className="col-1-of-2 search-section">
+                                <Route exact path="/" component={SearchSection}/>
+                            </section>
+                            <section className="col-1-of-2  add-section">
+                                <Route exact path="/" component={AddSection}/>
+                            </section>
+                        </div>
+
                     </main>
                     <footer className="footer"></footer>
                 </div>

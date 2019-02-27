@@ -78,8 +78,14 @@ class AddSection extends Component {
               onChange={event => this.setState({ phrase: event.target.value })}
           />
           <br/>
-          <button>Submit</button>
+          <button className="btn btn--submit">Submit</button>
         </form>
+
+        <div className="logger">
+          <h3 className="logger__title">People you Added:</h3>
+          <div className="logger__terminal" key={this.state.value.toString()}>
+          </div>
+        </div>
 
       </div>
     );
