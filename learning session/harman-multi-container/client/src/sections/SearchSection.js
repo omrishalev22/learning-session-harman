@@ -59,13 +59,9 @@ class SearchSection extends Component {
         this.initListeners();
     }
 
-    getLoader() {
-        return [<div key="loading"> Loading...</div>]
-    }
 
     deleteAll = () => {
-        axios.get('/api/delete', {});
-        this.setState({userInput: ''});
+        socket.emit('request', {action: 'deleteAllValues'});
     }
 
     handleSubmit = event => {
@@ -108,6 +104,9 @@ class SearchSection extends Component {
 
     }
 
+    /**
+     * Sets listeners which listens to websocket's events.
+     */
     initListeners() {
         socket.on('searchResult', (res) => {
             if (res && res.resultCode === 200) {
@@ -127,6 +126,12 @@ class SearchSection extends Component {
         socket.on('allValues', res => {
             if (res && res.resultCode === 200) {
                 this.setState({searchedValues: res.message})
+            }
+        });
+
+        socket.on('deletedAllValues', res => {
+            if (res && res.resultCode === 200) {
+                this.setState({userInput: '', searchedValues: false, pearl: false})
             }
         });
     }

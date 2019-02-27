@@ -12,40 +12,29 @@ pgClient
     .catch(err => console.log(err));
 const redisPublisher = redisClient.duplicate();
 
+/**
+ * Dispatches calls from client to right method
+ * @param action
+ * @param payload
+ */
 function init(action, payload) {
-    console.log("thissss", action);
-    console.log("thissss", payload);
     const APIs = {
         getPearlByUserName: getPearlByUserName,
         getAllSearchedValues: getAllSearchedValues,
         deleteAllValues: deleteAllValues
-    };
 
-    console.log("this is action", action);
-    console.log("APIs[action]", APIs[action]);
-    console.log("APIs", APIs);
-    if (APIs[action]) {
-        console.log("i am in")
     }
+
     APIs[action] ? APIs[action].apply(this, [action, payload]) : this.client.send(getResponseObject(400, null, null));
 }
 
 function getPearlByUserName(client, payload) {
-    console.log("got here as welll");
-    console.log("got here as welll");
     this.client.emit('searchResult', getResponseObject(200, 1, null));
     redisPublisher.publish('search', payload.username); // fires a search event which will be handled by worker service
     pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.username]); // updates people user already
     // looked for
 
-    redisClient.on('message', (channel, username) => {
-        console.log(channel);
-        console.log(username);
-    });
-
-
     redisClient.hgetall('values', (err, values) => {
-        console.log('valuessss', values);
         if (values && values[payload.username]) {
             this.client.emit('searchResult', getResponseObject(200, 0, values[payload.username]));
         } else {
@@ -55,10 +44,8 @@ function getPearlByUserName(client, payload) {
 }
 
 function getAllSearchedValues() {
-    console.log('starteeeeed');
     this.client.emit('allValues', getResponseObject(200, 1, []));
     pgClient.query('SELECT * from TEAM_NAMES ', (values) => {
-        console.log('all valuessss22');
         if (values) {
             this.client.emit('allValues', getResponseObject(200, 0, values));
         } else {
@@ -70,7 +57,7 @@ function getAllSearchedValues() {
 function deleteAllValues() {
     pgClient.query('DELETE FROM TEAM_NAMES');
     redisClient.flushdb();
-    this.client.emit(getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
+    this.client.emit('deletedAllValues',getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
 }
 
 /**
