@@ -1,0 +1,72 @@
+
+
+.main {
+  padding: 5rem 0;
+  display: inline-block;
+  width: 100%;
+  @include centerElement;
+
+  .search-section, .add-section {
+    float: left;
+    display: table-cell;
+    height: 50vh;
+    position: relative;
+
+    &:not(:last-child){
+      padding-right: 2rem;
+      margin-right: 2rem;
+      border-right: 1px solid gray;
+    }
+  }
+
+}
+
+.log {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  color: #9fff10;
+  background: #363636;
+  font-size: 1rem;
+  height: 2rem;
+
+  &__list {
+    color: white;
+  }
+}
+
+.results {
+  padding: 5rem 0;
+  &__checked-list , &__pearl {
+    float: left;
+    width: 50%;
+    height: 10rem;
+  }
+}
+
+
+// Common utils
+
+.box {
+  padding: .5rem;
+}
+
+
+.box-item {
+  margin-bottom: .6rem;
+  border-bottom: .2rem solid gray;
+  border-top: .2rem solid gray;
+  box-shadow: 0 .6rem 1.3rem #e2e2e2;
+  background: antiquewhite;
+}
+
+.box-item-value {
+  font-weight: bold;
+}
+
+.form__input {
+  width: 50rem;
+  padding: .5rem;
+  display: block;
+  margin: 0 auto .5rem;
+}

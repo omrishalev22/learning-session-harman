@@ -7,11 +7,32 @@ body {
   font-size: 10px;
   font-family: sans-serif; }
 
+.ul-small-margin-bottom {
+  margin-bottom: 1rem; }
+
+.primary-heading {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem; }
+
+.secondary-heading {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 1rem; }
+
+.examples {
+  color: darkseagreen;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold; }
+
 .header {
   text-align: center;
   background-image: linear-gradient(to right bottom, #315790, #447fae, #66a8c9, #93d0e2, #c6f8fd);
-  height: 20vh;
+  padding: 15rem 0;
   position: relative;
+  display: inline-block;
+  width: 100%;
   box-shadow: 0.5rem 0.5rem 2rem rgba(0, 0, 0, 0.4); }
   .header__title {
     font-size: 5rem;
@@ -23,7 +44,8 @@ body {
 
 .main {
   padding: 5rem 0;
-  display: table;
+  display: inline-block;
+  width: 100%;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -45,7 +67,7 @@ body {
   color: #9fff10;
   background: #363636;
   font-size: 1rem;
-  height: 3rem; }
+  height: 2rem; }
   .log__list {
     color: white; }
 
@@ -55,25 +77,6 @@ body {
     float: left;
     width: 50%;
     height: 10rem; }
-
-.ul-small-margin-bottom {
-  margin-bottom: 1rem; }
-
-.primary-heading {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 2rem; }
-
-.secondary-heading {
-  text-align: center;
-  font-size: 1rem;
-  margin-bottom: 1rem; }
-
-.examples {
-  color: darkseagreen;
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: bold; }
 
 .box {
   padding: .5rem; }
@@ -93,9 +96,3 @@ body {
   padding: .5rem;
   display: block;
   margin: 0 auto .5rem; }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg); }
-  to {
-    transform: rotate(360deg); } }

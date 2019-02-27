@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 import SearchSection from './sections/SearchSection';
@@ -23,7 +22,7 @@ class App extends Component {
                             <Route exact path="/" component={AddSection}/>
                         </section>
                     </main>
-
+                    <footer className="footer"></footer>
                 </div>
             </Router>
         );
