@@ -1,11 +1,14 @@
 package com.guild.search.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisPassword;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -18,13 +21,31 @@ import org.springframework.data.redis.serializer.GenericToStringSerializer;
 @PropertySource("classpath:application.properties")
 public class RedisConfig {
 
+    private @Value("${spring.redis.host}") String redisHost;
+    private @Value("${spring.redis.port}") int redisPort;
+
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
-        return new JedisConnectionFactory();
+        System.out.println("DROR: redis Factory host="+redisHost+" redisPort="+redisPort);
+        RedisStandaloneConfiguration redisStandaloneConfiguration
+                = new RedisStandaloneConfiguration(redisHost, redisPort);
+        return new JedisConnectionFactory(redisStandaloneConfiguration);
     }
+
+/*
+    @Bean
+    JedisConnectionFactory jedisConnectionFactory() {
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.setHostName(redisHost);
+        factory.setPort(redisPort);
+        factory.setUsePool(true);
+        return factory;
+    }
+*/
 
     @Bean
     RedisConnection connection() {
+        System.out.println("DROR: REDIS config host="+jedisConnectionFactory().getHostName()+" port="+jedisConnectionFactory().getPort());
         return jedisConnectionFactory().getConnection();
     }
     @Bean
