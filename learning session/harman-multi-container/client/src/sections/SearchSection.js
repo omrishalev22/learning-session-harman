@@ -1,8 +1,5 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-import socketIOClient from "socket.io-client";
-
-const socket = socketIOClient("/");
+const Channels = require('../shared/keys').channels;
 
 class SearchSection extends Component {
     state = {
@@ -11,9 +8,10 @@ class SearchSection extends Component {
         searchedValues: []
     };
 
-    constructor() {
-        super();
-        socket.emit('request', {action: 'getAllSearchedValues'});
+    componentDidMount() {
+        this.socket = this.props.socket;
+        this.socket.emit('request', {action: Channels.SEARCH_ALL});
+        this.initListeners();
     }
 
     render() {
@@ -55,20 +53,15 @@ class SearchSection extends Component {
         );
     }
 
-    componentDidMount() {
-        this.initListeners();
-    }
-
-
     deleteAll = () => {
-        socket.emit('request', {action: 'deleteAllValues'});
+        this.socket.emit('request', {action: Channels.DELETE});
     }
 
     handleSubmit = event => {
         event.preventDefault();
         // get phrase by userName - server return working status or actual value.
-        socket.emit('request', {
-            action: 'getPearlByUserName',
+        this.socket.emit('request', {
+            action: Channels.SEARCH,
             payload: {
                 username: this.state.userInput
             }
@@ -108,7 +101,7 @@ class SearchSection extends Component {
      * Sets listeners which listens to websocket's events.
      */
     initListeners() {
-        socket.on('searchResult', (res) => {
+        this.socket.on(Channels.SEARCH, (res) => {
             if (res && res.resultCode === 200) {
                 if (res.isWorking) {
                     this.setState({pearl: false})
@@ -123,13 +116,13 @@ class SearchSection extends Component {
             }
         });
 
-        socket.on('allValues', res => {
+        this.socket.on(Channels.SEARCH_ALL, res => {
             if (res && res.resultCode === 200) {
                 this.setState({searchedValues: res.message})
             }
         });
 
-        socket.on('deletedAllValues', res => {
+        this.socket.on(Channels.DELETE, res => {
             if (res && res.resultCode === 200) {
                 this.setState({userInput: '', searchedValues: false, pearl: false})
             }

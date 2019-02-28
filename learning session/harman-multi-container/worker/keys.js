@@ -1,4 +1,11 @@
 module.exports = {
-  redisHost: process.env.REDIS_HOST,
-  redisPort: process.env.REDIS_PORT
+    passwords: {
+        redisHost: process.env.REDIS_HOST,
+        redisPort: process.env.REDIS_PORT
+    },
+    channels: {
+        NEW: "NEW_VALUE",
+        SEARCH: "SEARCH",
+        DELETE: "DELETE"
+    }
 };

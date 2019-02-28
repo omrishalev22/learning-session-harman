@@ -3,6 +3,9 @@ import './App.css';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import SearchSection from './sections/SearchSection';
 import AddSection from "./sections/AddSection";
+import socketIOClient from "socket.io-client";
+
+const socket = socketIOClient("/");
 
 class App extends Component {
 
@@ -17,10 +20,10 @@ class App extends Component {
                     <main className="main">
                         <div className="row main__sections">
                             <section className="col-1-of-2 search-section">
-                                <Route exact path="/" component={SearchSection}/>
+                                <SearchSection socket={socket}/>
                             </section>
                             <section className="col-1-of-2  add-section">
-                                <Route exact path="/" component={AddSection}/>
+                                <AddSection socket={socket}/>
                             </section>
                         </div>
 
