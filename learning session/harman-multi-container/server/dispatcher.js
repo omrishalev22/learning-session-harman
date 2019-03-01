@@ -1,35 +1,33 @@
-const channels = require('./keys').channels;
-
+const keys = require('./keys');
 const {Pool} = require('pg');
 const Config = require('./config');
-const redis = require('redis');
 
 // setting redis pub/sub architecture
-
-const redisClient = redis.createClient(Config.getRedisConfig);
+const redis = require('redis');
 const subscriber = redis.createClient(Config.getRedisConfig);
-const publisher = redis.createClient(Config.getRedisConfig);
+const publisher  = redis.createClient(Config.getRedisConfig);
 
-subscriber.subscribe(channels.NEW);
-subscriber.subscribe(channels.SEARCH);
+subscriber.subscribe("newValues");
+subscriber.subscribe("searchResult");
 
-subscriber.on("message", function (channel, message) {
-    if (channels.NEW) {
-        if (message) {
+subscriber.on("message", function(channel, message) {
+    console.log("cjanell");
+    /*if (values && values[payload.username]) {
+        this.client.emit('searchResult', getResponseObject(200, 0, values[payload.username]));
+    } else {
+        this.client.emit('searchResult', getResponseObject(400, 1, "Not Found"));
+    }
+
+
+    publisher.on('newValues', (err, values) => {
+        if (values && values[payload.name]) {
             this.client.emit('newValue', getResponseObject(200, 0, "Value was Added successfully"));
         }
-    }
-
-    if (channels.SEARCH) {
-
-    }
-
-    if (channels.DELETE) {
-
-    }
+    });*/
 
     console.log("Message '" + message + "' on channel '" + channel + "' arrived!")
 });
+
 
 // Set DB - Redis and Postgres
 const pgClient = new Pool(Config.getPostgresConfig);
@@ -38,6 +36,7 @@ pgClient
     .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
     .catch(err => console.log(err));
 
+
 /**
  * Dispatches calls from client to right method
  * @param action
@@ -45,30 +44,31 @@ pgClient
  */
 function init(action, payload) {
     const APIs = {
-        [channels.SEARCH]: getPearlByUserName,
-        [channels.SEARCH_ALL]: getAllSearchedValues,
-        [channels.DELETE]: deleteAllValues,
-        [channels.NEW]: addValues
-    };
+        getPearlByUserName: getPearlByUserName,
+        getAllSearchedValues: getAllSearchedValues,
+        deleteAllValues: deleteAllValues,
+        addValues: addValues
+
+    }
+
 
     APIs[action] ? APIs[action].call(this, payload) : this.client.send(getResponseObject(400, null, null));
 }
 
 function getPearlByUserName(payload) {
-    this.client.emit(channels.SEARCH, getResponseObject(200, 1, null));
-    publisher.publish(channels.SEARCH, payload.username); // fires a search event which will be handled by worker
-                                                                // service
+    this.client.emit('searchResult', getResponseObject(200, 1, null));
+    publisher.publish('search', payload.username); // fires a search event which will be handled by worker service
     pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.username]); // updates people user already
     // looked for
 }
 
 function getAllSearchedValues() {
-    this.client.emit(channels.SEARCH, getResponseObject(200, 1, []));
+    this.client.emit('allValues', getResponseObject(200, 1, []));
     pgClient.query('SELECT * from TEAM_NAMES ', (values) => {
         if (values) {
-            this.client.emit(channels.SEARCH, getResponseObject(200, 0, values));
+            this.client.emit('allValues', getResponseObject(200, 0, values));
         } else {
-            this.client.emit(channels.SEARCH, getResponseObject(200, 0, []));
+            this.client.emit('allValues', getResponseObject(200, 0, []));
         }
     });
 }
@@ -77,18 +77,18 @@ function deleteAllValues() {
     pgClient.query('DELETE FROM TEAM_NAMES');
     publisher.flushdb();
     subscriber.flushdb();
-    this.client.emit(channels.DELETE, getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
-}
+    this.client.emit('deletedAllValues', getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
+}``
 
 function addValues(payload) {
-    this.client.emit(channels.NEW, getResponseObject(200, 1, null));
+    this.client.emit('newValue', getResponseObject(200, 1, null));
 
     // double check to UI validation
     payload.name = payload && payload.name.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
     payload.pearl = payload && payload.pearl.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
 
     pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.name]);
-    publisher.publish(channels.NEW, JSON.stringify(payload));
+    publisher.publish('insert', JSON.stringify(payload));
 
 }
 

@@ -19,7 +19,6 @@ io.on('connection', (client) => {
     client.on('request', (args) => {
         const dispatcher = new Dispatcher(client);
         dispatcher.dispatch(args.action,args.payload);
-
     })
 });
 

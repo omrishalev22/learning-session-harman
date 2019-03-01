@@ -10,7 +10,7 @@ class SearchSection extends Component {
 
     componentDidMount() {
         this.socket = this.props.socket;
-        this.socket.emit('request', {action: Channels.SEARCH_ALL});
+        this.socket.emit('request', {action: 'getAllSearchedValues'});
         this.initListeners();
     }
 
@@ -54,14 +54,14 @@ class SearchSection extends Component {
     }
 
     deleteAll = () => {
-        this.socket.emit('request', {action: Channels.DELETE});
+        this.socket.emit('request', {action: 'deleteAllValues'});
     }
 
     handleSubmit = event => {
         event.preventDefault();
         // get phrase by userName - server return working status or actual value.
         this.socket.emit('request', {
-            action: Channels.SEARCH,
+            action: 'getPearlByUserName',
             payload: {
                 username: this.state.userInput
             }
@@ -101,7 +101,7 @@ class SearchSection extends Component {
      * Sets listeners which listens to websocket's events.
      */
     initListeners() {
-        this.socket.on(Channels.SEARCH, (res) => {
+        this.socket.on('searchResult', (res) => {
             if (res && res.resultCode === 200) {
                 if (res.isWorking) {
                     this.setState({pearl: false})
@@ -116,13 +116,13 @@ class SearchSection extends Component {
             }
         });
 
-        this.socket.on(Channels.SEARCH_ALL, res => {
+        this.socket.on('allValues', res => {
             if (res && res.resultCode === 200) {
                 this.setState({searchedValues: res.message})
             }
         });
 
-        this.socket.on(Channels.DELETE, res => {
+        this.socket.on('deletedAllValues', res => {
             if (res && res.resultCode === 200) {
                 this.setState({userInput: '', searchedValues: false, pearl: false})
             }

@@ -1,11 +1,15 @@
-const passwords = require('./keys').passwords;
-const channels = require('./keys').channels;
+
+const keys = require('./keys');
+
 const redis = require('redis');
 
-const redisClient = redis.createClient({host: passwords.redisHost, port: passwords.redisPort, retry_strategy: () => 1000});
-const subscriber = redis.createClient({host: passwords.redisHost, port: passwords.redisPort, retry_strategy: () => 1000});
-const publisher = redis.createClient({host: passwords.redisHost, port: passwords.redisPort, retry_strategy: () => 1000});
-
+const redisClient = redis.createClient({
+                                           host: keys.redisHost,
+                                           port: keys.redisPort,
+                                           retry_strategy: () => 1000
+                                       });
+const subscriber = redisClient.duplicate();
+const publisher = redisClient.duplicate();
 
 const values = {
     omri: 'מה זה הרעש הזה? רון? חאלס עם המטבעות פוקר האלה, מה יהיה ענת עם ההקלדות, מה זה המוזיקה הזאת',
@@ -21,9 +25,12 @@ const values = {
 }
 
 function insertNewValue(payload) {
+    console.log("payload", payload.name);
+    console.log("payload", payload.pearl);
     if (!values[payload.name]) {
         values[payload.name] = payload.pearl;
-        return "Success";
+        console.log('all vlaues',values);
+        return values[payload.name];
     }
     return "Already Exists!"
 
@@ -34,16 +41,15 @@ function getMemberPhrase(teamMemberName) {
 }
 
 subscriber.on('message', (channel, payload) => {
-    if (channels.NEW) {
+    if (channel === "insert") {
         let parsePayload = JSON.parse(payload);
-        console.log("parsePayload", parsePayload);
-        console.log("inside the new channel");
-        publisher.publish(channels.NEW,insertNewValue(parsePayload));
+        console.log("parsePayload",parsePayload);
+        // publisher.publish('newValues', parsePayload.name, insertNewValue(parsePayload));
     } else {
-        console.log("inside the search channel");
-        publisher.publish(channels.SEARCH, getMemberPhrase(payload));
+        console.log("heree");
+        publisher.publish('searchResult', getMemberPhrase(payload));
     }
 });
 
-subscriber.subscribe(channels.NEW);
-subscriber.subscribe(channels.SEARCH);
+subscriber.subscribe('search');
+subscriber.subscribe('insert');
