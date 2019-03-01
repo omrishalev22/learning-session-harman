@@ -47,9 +47,9 @@ subscriber.on('message', (channel, payload) => {
         // publisher.publish('newValues', parsePayload.name, insertNewValue(parsePayload));
     } else {
         console.log("heree");
-        publisher.publish('searchResult', getMemberPhrase(payload));
+        publisher.publish(keys.channels.SEARCH_RES, getMemberPhrase(payload));
     }
 });
 
-subscriber.subscribe('search');
+subscriber.subscribe(keys.channels.SEARCH);
 subscriber.subscribe('insert');

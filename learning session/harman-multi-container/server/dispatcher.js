@@ -1,117 +1,137 @@
-const keys = require('./keys');
-const {Pool} = require('pg');
-const Config = require('./config');
+const Dispatcher = function (websocket) {
+    const keys = require('./keys');
+    const {Pool} = require('pg');
+    const Config = require('./config');
 
-// setting redis pub/sub architecture
-const redis = require('redis');
-const subscriber = redis.createClient(Config.getRedisConfig);
-const publisher  = redis.createClient(Config.getRedisConfig);
+    // setting redis pub/sub architecture
+    const redis = require('redis');
+    const subscriber = redis.createClient(Config.getRedisConfig);
+    const publisher = redis.createClient(Config.getRedisConfig);
+    const pgClient = new Pool(Config.getPostgresConfig);
 
-subscriber.subscribe("newValues");
-subscriber.subscribe("searchResult");
+    let client = null;
 
-subscriber.on("message", function(channel, message) {
-    console.log("cjanell");
-    /*if (values && values[payload.username]) {
-        this.client.emit('searchResult', getResponseObject(200, 0, values[payload.username]));
-    } else {
-        this.client.emit('searchResult', getResponseObject(400, 1, "Not Found"));
+    class Dispatcher {
+
+        constructor(websocket) {
+            client = websocket;
+            this.initConfiguration();
+            this.initListeners();
+            this.dispatch = this.init; // for outside usage
+        }
+
+        /**
+         * Dispatches calls from client to right method
+         * @param action
+         * @param payload
+         */
+        init(action, payload) {
+            console.log(action);
+            const APIs = {
+                SEARCH: this.getPearlByUserName,
+                getAllSearchedValues: this.getAllSearchedValues,
+                deleteAllValues: this.deleteAllValues,
+                addValues: this.addValues
+            }
+
+            APIs[action] ? APIs[action].call(this, payload) : client.send(this.getResponseObject(400, null, null));
+        }
+
+        initListeners() {
+            subscriber.on("message", (channel, message) => {
+                console.log("this", this);
+                if (channel === keys.channels.SEARCH_RES) {
+                    if (message) {
+                        client.emit(keys.channels.SEARCH, this.getResponseObject(200, 0, message));
+                    } else {
+                        client.emit(keys.channels.SEARCH, this.getResponseObject(400, 1, "Not Found"));
+                    }
+                }
+            });
+        }
+
+        /**
+         * Init redis and postgres configuration
+         */
+        initConfiguration() {
+            subscriber.subscribe("newValues");
+            subscriber.subscribe(keys.channels.SEARCH_RES);
+            pgClient.on('error', () => console.log('Lost PG connection'));
+            pgClient
+                .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
+                .catch(err => console.log(err));
+
+        }
+
+        /**************** APIs ****************/
+
+        getPearlByUserName(payload) {
+            client.emit(keys.channels.SEARCH, this.getResponseObject(200, 1, null));
+            publisher.publish(keys.channels.SEARCH, payload.username); // fires a search event which will be handled by worker service
+            pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.username]); // updates people user already
+            // looked for
+        }
+
+        getAllSearchedValues() {
+            client.emit('allValues', this.getResponseObject(200, 1, []));
+            pgClient.query('SELECT * from TEAM_NAMES ', (values) => {
+                if (values) {
+                    client.emit('allValues', this.getResponseObject(200, 0, values));
+                } else {
+                    client.emit('allValues', this.getResponseObject(200, 0, []));
+                }
+            });
+        }
+
+        deleteAllValues() {
+            pgClient.query('DELETE FROM TEAM_NAMES');
+            publisher.flushdb();
+            subscriber.flushdb();
+            this.client.emit('deletedAllValues', this.getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
+        }
+
+
+        addValues(payload) {
+            client.emit('newValue', this.getResponseObject(200, 1, null));
+
+            // double check to UI validation
+            payload.name = payload && payload.name.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
+            payload.pearl = payload && payload.pearl.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
+
+            pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.name]);
+            publisher.publish('insert', JSON.stringify(payload));
+
+        }
+
+
+        /****************** APIs - END ****************/
+
+
+        /******************* HELPERS ****************/
+
+        /**
+         *
+         * @param resultCode - 200 success ( both completeted and pending ) while 400 for bad request
+         * @param status - 1 completed , 0 pending
+         * @param message - any string
+         * @returns {{resultCode: *, message: *, status: *}}
+         */
+        getResponseObject(resultCode, isWorking, message = null) {
+            return {resultCode: resultCode, isWorking: isWorking, message}
+        }
+
+
+        /******************* HELPERS END ****************/
+
+
     }
 
-
-    publisher.on('newValues', (err, values) => {
-        if (values && values[payload.name]) {
-            this.client.emit('newValue', getResponseObject(200, 0, "Value was Added successfully"));
-        }
-    });*/
-
-    console.log("Message '" + message + "' on channel '" + channel + "' arrived!")
-});
-
-
-// Set DB - Redis and Postgres
-const pgClient = new Pool(Config.getPostgresConfig);
-pgClient.on('error', () => console.log('Lost PG connection'));
-pgClient
-    .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
-    .catch(err => console.log(err));
-
-
-/**
- * Dispatches calls from client to right method
- * @param action
- * @param payload
- */
-function init(action, payload) {
-    const APIs = {
-        getPearlByUserName: getPearlByUserName,
-        getAllSearchedValues: getAllSearchedValues,
-        deleteAllValues: deleteAllValues,
-        addValues: addValues
-
-    }
-
-
-    APIs[action] ? APIs[action].call(this, payload) : this.client.send(getResponseObject(400, null, null));
+    return new Dispatcher(websocket);
 }
 
-function getPearlByUserName(payload) {
-    this.client.emit('searchResult', getResponseObject(200, 1, null));
-    publisher.publish('search', payload.username); // fires a search event which will be handled by worker service
-    pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.username]); // updates people user already
-    // looked for
+module.exports = function (websocket) {
+    return new Dispatcher(websocket);
 }
 
-function getAllSearchedValues() {
-    this.client.emit('allValues', getResponseObject(200, 1, []));
-    pgClient.query('SELECT * from TEAM_NAMES ', (values) => {
-        if (values) {
-            this.client.emit('allValues', getResponseObject(200, 0, values));
-        } else {
-            this.client.emit('allValues', getResponseObject(200, 0, []));
-        }
-    });
-}
 
-function deleteAllValues() {
-    pgClient.query('DELETE FROM TEAM_NAMES');
-    publisher.flushdb();
-    subscriber.flushdb();
-    this.client.emit('deletedAllValues', getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
-}``
 
-function addValues(payload) {
-    this.client.emit('newValue', getResponseObject(200, 1, null));
-
-    // double check to UI validation
-    payload.name = payload && payload.name.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
-    payload.pearl = payload && payload.pearl.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
-
-    pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.name]);
-    publisher.publish('insert', JSON.stringify(payload));
-
-}
-
-/**
- *
- * @param resultCode - 200 success ( both completeted and pending ) while 400 for bad request
- * @param status - 1 completed , 0 pending
- * @param message - any string
- * @returns {{resultCode: *, message: *, status: *}}
- */
-function getResponseObject(resultCode, isWorking, message = null) {
-    return {resultCode: resultCode, isWorking: isWorking, message, message}
-}
-
-/*
-app.post('/values', async (req, res) => {
-    res.send({working: true});
-    const userInput = req.body.userInput;
-    redisPublisher.publish('insert', userInput);
-    pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [userInput]);
-});*/
-
-module.exports = function (client) {
-    this.client = client;
-    this.dispatch = init
-};

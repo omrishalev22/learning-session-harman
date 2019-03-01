@@ -61,7 +61,7 @@ class SearchSection extends Component {
         event.preventDefault();
         // get phrase by userName - server return working status or actual value.
         this.socket.emit('request', {
-            action: 'getPearlByUserName',
+            action: Channels.SEARCH,
             payload: {
                 username: this.state.userInput
             }
@@ -101,7 +101,8 @@ class SearchSection extends Component {
      * Sets listeners which listens to websocket's events.
      */
     initListeners() {
-        this.socket.on('searchResult', (res) => {
+        this.socket.on(Channels.SEARCH, (res) => {
+            console.log("res",res);
             if (res && res.resultCode === 200) {
                 if (res.isWorking) {
                     this.setState({pearl: false})

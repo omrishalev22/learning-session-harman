@@ -1,6 +1,5 @@
 const socketIo = require("socket.io");
 const http = require("http");
-const Dispatcher = require("./dispatcher");
 const port = 5000;
 
 // Express App Setup
@@ -15,11 +14,13 @@ const server = http.createServer(app);
 const io = socketIo(server); // < Interesting!
 
 io.on('connection', (client) => {
-    // listens to request, responses are sent back from dispatcher
+    // bring dispatcher only if websocket connection was established successfully.
+    const Dispatcher = require("./dispatcher")(client);
+
     client.on('request', (args) => {
-        const dispatcher = new Dispatcher(client);
-        dispatcher.dispatch(args.action,args.payload);
+        Dispatcher.dispatch(args.action,args.payload);
     })
+
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
