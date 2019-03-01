@@ -25,11 +25,8 @@ const values = {
 }
 
 function insertNewValue(payload) {
-    console.log("payload", payload.name);
-    console.log("payload", payload.pearl);
     if (!values[payload.name]) {
         values[payload.name] = payload.pearl;
-        console.log('all vlaues',values);
         return values[payload.name];
     }
     return "Already Exists!"
@@ -43,10 +40,8 @@ function getMemberPhrase(teamMemberName) {
 subscriber.on('message', (channel, payload) => {
     if (channel === "insert") {
         let parsePayload = JSON.parse(payload);
-        console.log("parsePayload",parsePayload);
         // publisher.publish('newValues', parsePayload.name, insertNewValue(parsePayload));
     } else {
-        console.log("heree");
         publisher.publish(keys.channels.SEARCH_RES, getMemberPhrase(payload));
     }
 });

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+
 const Channels = require('../shared/keys').channels;
 
 class SearchSection extends Component {
@@ -10,7 +11,7 @@ class SearchSection extends Component {
 
     componentDidMount() {
         this.socket = this.props.socket;
-        this.socket.emit('request', {action: 'getAllSearchedValues'});
+        this.socket.emit('request', {action: Channels.SEARCH_ALL});
         this.initListeners();
     }
 
@@ -53,8 +54,9 @@ class SearchSection extends Component {
         );
     }
 
-    deleteAll = () => {
-        this.socket.emit('request', {action: 'deleteAllValues'});
+    deleteAll = (event) => {
+        event.preventDefault();
+        this.socket.emit('request', {action: Channels.DELETE});
     }
 
     handleSubmit = event => {
@@ -79,7 +81,8 @@ class SearchSection extends Component {
             );
 
         } else {
-            entries.push(<div className="results__item ul-small-margin-bottom" key={this.state.userInput}>No Results Yet</div>);
+            entries.push(<div className="results__item ul-small-margin-bottom" key={this.state.userInput}>No Results
+                Yet</div>);
         }
 
         return entries
@@ -102,7 +105,6 @@ class SearchSection extends Component {
      */
     initListeners() {
         this.socket.on(Channels.SEARCH, (res) => {
-            console.log("res",res);
             if (res && res.resultCode === 200) {
                 if (res.isWorking) {
                     this.setState({pearl: false})
@@ -117,15 +119,15 @@ class SearchSection extends Component {
             }
         });
 
-        this.socket.on('allValues', res => {
+        this.socket.on(Channels.SEARCH_ALL, res => {
             if (res && res.resultCode === 200) {
                 this.setState({searchedValues: res.message})
             }
         });
 
-        this.socket.on('deletedAllValues', res => {
+        this.socket.on(Channels.DELETE, res => {
             if (res && res.resultCode === 200) {
-                this.setState({userInput: '', searchedValues: false, pearl: false})
+                this.setState({userInput: '', searchedValues: false, pearl: res.message})
             }
         });
     }

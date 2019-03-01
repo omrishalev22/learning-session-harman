@@ -26,26 +26,29 @@ const Dispatcher = function (websocket) {
          * @param payload
          */
         init(action, payload) {
-            console.log(action);
             const APIs = {
                 SEARCH: this.getPearlByUserName,
-                getAllSearchedValues: this.getAllSearchedValues,
-                deleteAllValues: this.deleteAllValues,
-                addValues: this.addValues
+                SEARCH_ALL: this.getAllSearchedValues,
+                DELETE: this.deleteAllValues
             }
+
+            /*NEW: this.addValues*/
 
             APIs[action] ? APIs[action].call(this, payload) : client.send(this.getResponseObject(400, null, null));
         }
 
         initListeners() {
             subscriber.on("message", (channel, message) => {
-                console.log("this", this);
                 if (channel === keys.channels.SEARCH_RES) {
                     if (message) {
                         client.emit(keys.channels.SEARCH, this.getResponseObject(200, 0, message));
                     } else {
                         client.emit(keys.channels.SEARCH, this.getResponseObject(400, 1, "Not Found"));
                     }
+                }
+
+                if (channel === keys.channels.SEARCH_ALL) {
+
                 }
             });
         }
@@ -56,6 +59,7 @@ const Dispatcher = function (websocket) {
         initConfiguration() {
             subscriber.subscribe("newValues");
             subscriber.subscribe(keys.channels.SEARCH_RES);
+
             pgClient.on('error', () => console.log('Lost PG connection'));
             pgClient
                 .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
@@ -73,25 +77,24 @@ const Dispatcher = function (websocket) {
         }
 
         getAllSearchedValues() {
-            client.emit('allValues', this.getResponseObject(200, 1, []));
+            client.emit(keys.channels.SEARCH_ALL, this.getResponseObject(200, 1, []));
             pgClient.query('SELECT * from TEAM_NAMES ', (values) => {
                 if (values) {
-                    client.emit('allValues', this.getResponseObject(200, 0, values));
+                    client.emit(keys.channels.SEARCH_ALL, this.getResponseObject(200, 0, values));
                 } else {
-                    client.emit('allValues', this.getResponseObject(200, 0, []));
+                    client.emit(keys.channels.SEARCH_ALL, this.getResponseObject(200, 0, []));
                 }
             });
         }
 
         deleteAllValues() {
             pgClient.query('DELETE FROM TEAM_NAMES');
-            publisher.flushdb();
-            subscriber.flushdb();
-            this.client.emit('deletedAllValues', this.getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
+            client.emit(keys.channels.DELETE, this.getResponseObject(200, 0, "All values were deleted, both from PG and Redis"));
         }
 
 
-        addValues(payload) {
+  /*      addValues(payload) {
+            console.log("add new values started by accident");
             client.emit('newValue', this.getResponseObject(200, 1, null));
 
             // double check to UI validation
@@ -101,7 +104,7 @@ const Dispatcher = function (websocket) {
             pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.name]);
             publisher.publish('insert', JSON.stringify(payload));
 
-        }
+        }*/
 
 
         /****************** APIs - END ****************/

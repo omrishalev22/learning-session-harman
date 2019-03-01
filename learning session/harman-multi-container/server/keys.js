@@ -8,6 +8,9 @@ module.exports = {
     pgPort: process.env.PGPORT,
     channels: {
         SEARCH: "SEARCH",
-        SEARCH_RES: "SEARCH_RES"
+        SEARCH_RES: "SEARCH_RES",
+        SEARCH_ALL: "SEARCH_ALL",
+        DELETE: "DELETE",
+        NEW: "NEW"
     }
 };
