@@ -8,19 +8,10 @@ class SearchSection extends Component {
         searchedValues: []
     };
 
-    constructor(){
-        super();
-
-    }
-
-    componentWillMount(){
-        this.socket = this.props.socket;
-        this.initListeners();
-
-    }
-
     componentDidMount() {
-        this.socket.emit('request', {action: Channels.SEARCH_ALL});
+        this.socket = this.props.socket;
+        this.socket.emit('request', {action: 'getAllSearchedValues'});
+        this.initListeners();
     }
 
     render() {
@@ -125,8 +116,7 @@ class SearchSection extends Component {
             }
         });
 
-        this.socket.on(Channels.SEARCH_ALL, res => {
-            console.log("all valuse returned");
+        this.socket.on('allValues', res => {
             if (res && res.resultCode === 200) {
                 this.setState({searchedValues: res.message})
             }
@@ -139,9 +129,6 @@ class SearchSection extends Component {
         });
     }
 
-    componentWillUnmount(){
-        this.socket.on(Channels.SEARCH_ALL_RES).unsubscribe();
-    }
 }
 
 export default SearchSection;

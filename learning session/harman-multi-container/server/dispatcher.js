@@ -1,4 +1,4 @@
-const Channels = require('./keys').channels;
+const keys = require('./keys');
 const {Pool} = require('pg');
 const Config = require('./config');
 
@@ -45,12 +45,13 @@ pgClient
 function init(action, payload) {
     const APIs = {
         getPearlByUserName: getPearlByUserName,
-        SEARCH_ALL: getAllSearchedValues,
+        getAllSearchedValues: getAllSearchedValues,
         deleteAllValues: deleteAllValues,
         addValues: addValues
+
     }
-    console.log("inside dispatcher init");
-    console.log("dispatcher action",action);
+
+
     APIs[action] ? APIs[action].call(this, payload) : this.client.send(getResponseObject(400, null, null));
 }
 
@@ -62,13 +63,12 @@ function getPearlByUserName(payload) {
 }
 
 function getAllSearchedValues() {
-    console.log("SEARCH_ALL as started");
-    this.client.emit(Channels.SEARCH_ALL, getResponseObject(200, 1, []));
+    this.client.emit('allValues', getResponseObject(200, 1, []));
     pgClient.query('SELECT * from TEAM_NAMES ', (values) => {
         if (values) {
-            this.client.emit(Channels.SEARCH_ALL, getResponseObject(200, 0, values));
+            this.client.emit('allValues', getResponseObject(200, 0, values));
         } else {
-            this.client.emit(Channels.SEARCH_ALL, getResponseObject(200, 0, []));
+            this.client.emit('allValues', getResponseObject(200, 0, []));
         }
     });
 }
