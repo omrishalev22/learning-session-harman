@@ -8,19 +8,17 @@
   }
 
   height: 50vh;
-  background: #262626;
   clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);
   position: relative;
   text-align: center;
-  color: white;
+  color: black;
   @include centerElement;
 
   .search-section, .add-section {
     display: flex;
     flex-direction: column;
     position: relative;
-    padding-top: 5rem;
-    height: 80%;
+    padding-top: 2rem;
 
     &:not(:last-child) {
       padding-right: 2rem;
@@ -30,17 +28,6 @@
 
   .search-section {
 
-    &__results {
-      padding: 3rem 0;
-      font-size: 1.6rem;
-    }
-
-    .results {
-      &__pearl {
-        margin-bottom: 2rem;
-      }
-    }
-
     &__title {
       display: block;
     }
@@ -48,6 +35,11 @@
     &__form {
       width: 70%;
       margin: auto;
+    }
+
+    &__results {
+      padding: 3rem 0;
+      font-size: 1.6rem;
     }
 
   }

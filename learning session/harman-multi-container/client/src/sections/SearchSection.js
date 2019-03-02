@@ -24,10 +24,9 @@ class SearchSection extends Component {
                     </h3>
                 </div>
 
-                <form className="form" onSubmit={this.handleSubmit}>
-                    <p className="examples ul-small-margin-bottom">Examples for searches: omri, ido ,raz , anat ,
+                <form className="form search-section__form" onSubmit={this.handleSubmit}>
+                    <p className="examples ul-small-margin-bottom">omri, ido ,raz , anat ,
                         matthew , ron ,guyw , guys , yafit </p>
-
                     <input
                         className="form__input"
                         value={this.state.userInput}
@@ -44,7 +43,7 @@ class SearchSection extends Component {
                     </div>
                 </div>
 
-                <div className="logger">
+                <div className="logger search-section__logger">
                     <h3 className="logger__title">People you already checked out:</h3>
                     <div className="logger__terminal" key={this.state.searchedValues.toString()}>
                         {this.renderAllSearchedValues()}

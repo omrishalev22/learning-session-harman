@@ -1,7 +1,11 @@
 $primary-background :  linear-gradient(to right bottom, #315790, #447fae, #66a8c9, #93d0e2, #c6f8fd);
 $box-shadow-light :   0.5rem 0.5rem 2rem rgba(0, 0, 0, 0.4);
+$box-shadow-dark :   0.5rem 0.5rem 2rem rgba(0, 0, 0, 0.8);
+$box-shadow-pressed : 0.3rem 0.2rem 0.8rem rgba(0, 0, 0, 0.6);
 
 // GRID
 $grid-width : 114rem;
 $gutter-vertical: 8rem;
 $gutter-horizontal: 6rem;
+
+$primary-color: #66A8C9;

@@ -10,6 +10,20 @@
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 5%;
+  box-shadow: $box-shadow-light;
+
+  &:not(:last-child) {
+      margin-right: 1rem;
+  }
+
+  &:hover {
+    transform: translateY(-0.2rem);
+  }
+
+  &:active {
+    transform: translateY(0.1rem);
+    box-shadow: $box-shadow-pressed;
+  }
 
   &--submit {
     background-color: #008CBA
