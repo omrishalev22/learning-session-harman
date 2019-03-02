@@ -101,7 +101,7 @@ class SearchSection extends Component {
     }
 
     /**
-     * Sets listeners which listens to websocket's events.
+     * Sets listeners which listens to websocket's events from server
      */
     initListeners() {
         this.socket.on(Channels.SEARCH, (res) => {

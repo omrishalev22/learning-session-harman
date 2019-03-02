@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-const channels = require('../shared/keys').channels;
+
+const Channels = require('../shared/keys').channels;
 
 class AddSection extends Component {
     state = {
         name: "",
-        pearl: ''
+        pearl: '',
+        addedList: ''
     };
 
     componentDidMount() {
@@ -12,16 +14,27 @@ class AddSection extends Component {
         this.initListeners();
     }
 
-    handleAddSubmit = async event => {
+    handleAddSubmit = event => {
         event.preventDefault();
         this.socket.emit('request', {
-            action: channels.SEARCH,
+            action: Channels.ADD,
             payload: {
                 name: this.state.name,
                 pearl: this.state.pearl
             }
         });
     };
+
+    renderAddedPeopleList() {
+        if (this.state.addedList) {
+            return (
+                <span className="log__list" key={this.state.addedList.toString()}>
+                    {this.state.addedList.join(", ")}
+                </span>
+            );
+        }
+        return [];
+    }
 
     render() {
         return (
@@ -50,7 +63,8 @@ class AddSection extends Component {
 
                 <div className="logger">
                     <h3 className="logger__title">People you Added:</h3>
-                    <div className="logger__terminal" key={this.state.name.toString()}>
+                    <div className="logger__terminal" key={this.state.addedList.toString()}>
+                        {this.renderAddedPeopleList()}
                     </div>
                 </div>
 
@@ -63,11 +77,15 @@ class AddSection extends Component {
      * Sets listeners which listens to websocket's events.
      */
     initListeners() {
-        this.socket.on(channels.DELETE, res => {
-            if (res && res.resultCode === 200) {
-                this.setState({userInput: '', searchedValues: false, pearl: false})
+        this.socket.on(Channels.ADD, res => {
+            if (res && res.resultCode === 200 && res.message) {
+                this.setState((prev) => ({
+                    addedList: [...prev.addedList, res.message],
+                }));
             }
         });
+
+
     }
 }
 

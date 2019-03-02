@@ -20,7 +20,6 @@ io.on('connection', (client) => {
     client.on('request', (args) => {
         Dispatcher.dispatch(args.action,args.payload);
     })
-
 });
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

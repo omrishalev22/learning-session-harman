@@ -11,6 +11,7 @@ module.exports = {
         SEARCH_RES: "SEARCH_RES",
         SEARCH_ALL: "SEARCH_ALL",
         DELETE: "DELETE",
-        NEW: "NEW"
+        ADD: "ADD",
+        ADD_RES: "ADD_RES"
     }
 };

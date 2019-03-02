@@ -11,6 +11,7 @@ const Dispatcher = function (websocket) {
 
     let client = null;
 
+
     class Dispatcher {
 
         constructor(websocket) {
@@ -29,10 +30,10 @@ const Dispatcher = function (websocket) {
             const APIs = {
                 SEARCH: this.getPearlByUserName,
                 SEARCH_ALL: this.getAllSearchedValues,
-                DELETE: this.deleteAllValues
-            }
+                DELETE: this.deleteAllValues,
+                ADD: this.addValues
 
-            /*NEW: this.addValues*/
+            }
 
             APIs[action] ? APIs[action].call(this, payload) : client.send(this.getResponseObject(400, null, null));
         }
@@ -47,8 +48,13 @@ const Dispatcher = function (websocket) {
                     }
                 }
 
-                if (channel === keys.channels.SEARCH_ALL) {
 
+                if (channel === keys.channels.ADD_RES) {
+                    if (message) {
+                        client.emit(keys.channels.ADD, this.getResponseObject(200, 0, message));
+                    } else {
+                        client.emit(keys.channels.ADD, this.getResponseObject(400, 1, "Not Found"));
+                    }
                 }
             });
         }
@@ -57,15 +63,16 @@ const Dispatcher = function (websocket) {
          * Init redis and postgres configuration
          */
         initConfiguration() {
-            subscriber.subscribe("newValues");
+            // events from worker micro-service
+            subscriber.subscribe(keys.channels.ADD_RES);
             subscriber.subscribe(keys.channels.SEARCH_RES);
 
             pgClient.on('error', () => console.log('Lost PG connection'));
             pgClient
                 .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
                 .catch(err => console.log(err));
-
         }
+
 
         /**************** APIs ****************/
 
@@ -93,18 +100,18 @@ const Dispatcher = function (websocket) {
         }
 
 
-  /*      addValues(payload) {
+        addValues(payload) {
             console.log("add new values started by accident");
-            client.emit('newValue', this.getResponseObject(200, 1, null));
+            client.emit(keys.channels.ADD, this.getResponseObject(200, 1, null));
 
             // double check to UI validation
             payload.name = payload && payload.name.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
             payload.pearl = payload && payload.pearl.replace("/[^a-zA-Z0-9]/g,'_'"); // prevent SQL injection.
 
             pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [payload.name]);
-            publisher.publish('insert', JSON.stringify(payload));
+            publisher.publish(keys.channels.ADD, JSON.stringify(payload));
 
-        }*/
+        }
 
 
         /****************** APIs - END ****************/

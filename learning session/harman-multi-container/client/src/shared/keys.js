@@ -6,7 +6,7 @@
  */
 module.exports = {
     channels: {
-        NEW: "NEW",
+        ADD: "ADD",
         SEARCH: "SEARCH",
         SEARCH_ALL: "SEARCH_ALL",
         DELETE: "DELETE"

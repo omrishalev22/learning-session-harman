@@ -1,13 +1,12 @@
-
 const keys = require('./keys');
 
 const redis = require('redis');
 
 const redisClient = redis.createClient({
-                                           host: keys.redisHost,
-                                           port: keys.redisPort,
-                                           retry_strategy: () => 1000
-                                       });
+    host: keys.redisHost,
+    port: keys.redisPort,
+    retry_strategy: () => 1000
+});
 const subscriber = redisClient.duplicate();
 const publisher = redisClient.duplicate();
 
@@ -38,13 +37,14 @@ function getMemberPhrase(teamMemberName) {
 }
 
 subscriber.on('message', (channel, payload) => {
-    if (channel === "insert") {
+    if (channel === keys.channels.ADD) {
         let parsePayload = JSON.parse(payload);
-        // publisher.publish('newValues', parsePayload.name, insertNewValue(parsePayload));
+        insertNewValue(parsePayload);
+        publisher.publish(keys.channels.ADD_RES, parsePayload.name);
     } else {
         publisher.publish(keys.channels.SEARCH_RES, getMemberPhrase(payload));
     }
 });
 
 subscriber.subscribe(keys.channels.SEARCH);
-subscriber.subscribe('insert');
+subscriber.subscribe(keys.channels.ADD);
