@@ -1,4 +1,6 @@
-const keys = require('./keys');
+const socketIo = require("socket.io");
+const http = require("http");
+const port = 5000;
 
 // Express App Setup
 const express = require('express');
@@ -8,83 +10,17 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+const server = http.createServer(app);
+const io = socketIo(server); // < Interesting!
 
-// Postgres Client Setup
-const { Pool } = require('pg');
-const pgClient = new Pool({
-  user: keys.pgUser,
-  host: keys.pgHost,
-  database: keys.pgDatabase,
-  password: keys.pgPassword,
-  port: keys.pgPort
-});
-pgClient.on('error', () => console.log('Lost PG connection'));
+io.on('connection', (client) => {
+    // bring dispatcher only if websocket connection was established successfully.
+    const Dispatcher = require("./dispatcher")(client);
 
-pgClient
-  .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
-  .catch(err => console.log(err));
-
-// Redis Client Setup
-const redis = require('redis');
-
-const redisClient = redis.createClient({
-  host: keys.redisHost,
-  port: keys.redisPort,
-  retry_strategy: () => 1000
-});
-const redisPublisher = redisClient.duplicate();
-
-// Express route handlers
-
-app.get('/delete', async (req, res) => {
-    await pgClient.query('DELETE FROM TEAM_NAMES');
-    redisClient.flushdb();
-    res.send('all values were deleted');
+    client.on('request', (args) => {
+        Dispatcher.dispatch(args.action,args.payload);
+    })
 });
 
+server.listen(port, () => console.log(`Listening on port ${port}`));
 
-app.get('/values/all', async (req, res) => {
-  pgClient
-      .query('CREATE TABLE IF NOT EXISTS TEAM_NAMES (name TEXT )')
-      .catch(err => console.log(err));
-
-  const values = await pgClient.query('SELECT * from TEAM_NAMES ');
-  res.send(values.rows);
-});
-
-app.get('/values/current', async (req, res) => {
-  redisClient.hgetall('values', (err, values) => {
-      if(err) res.send(err);
-    res.send(values);
-  });
-});
-
-app.post('/values', async (req, res) => {
-  const index = req.body.index;
-
-  if (parseInt(index) > 40) {
-    return res.status(422).send('Index too high');
-  }
-
-  redisClient.hget( "values", index, function(err, currMsg){
-    //console.log("currMsg="+currMsg);
-    //Do some processing with the value from this field and watch it after
-
-    if(err) {
-      console.log("Error getting value from redis: "+err);
-    }
-
-    console.log("Current Message for "+index+": '"+currMsg+"'");
-    if (!currMsg || currMsg == 'OK') {
-      redisClient.hset('values', index, 'Nada. Please wait.');
-    }
-  } );
-
-  redisPublisher.publish('insert', index);
-  pgClient.query('INSERT INTO TEAM_NAMES(name) VALUES($1)', [index]);
-  res.send({ working: true });
-});
-
-app.listen(5000, err => {
-  console.log('Listening');
-});

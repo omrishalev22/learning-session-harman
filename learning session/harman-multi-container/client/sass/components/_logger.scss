@@ -1,0 +1,9 @@
+.logger {
+  width: 100%;
+  color: $primary-color;
+  font-size: 1rem;
+  padding: 1.5rem 0;
+  &__list {
+    color: black;
+  }
+}

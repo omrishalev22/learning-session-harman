@@ -1,0 +1,9 @@
+.footer {
+  background-image: $primary-background;
+  height: 22vh;
+  padding: 5rem 0 ;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  clip-path: polygon(0 20%, 100% 0, 100% 100%,0 100%);
+}

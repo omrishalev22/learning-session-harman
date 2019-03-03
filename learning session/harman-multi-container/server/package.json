@@ -5,10 +5,11 @@
     "redis": "2.8.0",
     "cors": "2.8.4",
     "nodemon": "1.18.3",
-    "body-parser": "*"
+    "body-parser": "*",
+    "socket.io": "2.2.0"
   },
   "scripts": {
-    "dev": "nodemon",
+    "dev": "nodemon --inspect=0.0.0.0",
     "start": "node index.js"
   }
 }

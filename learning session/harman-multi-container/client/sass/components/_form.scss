@@ -1,0 +1,18 @@
+.form {
+  &__input {
+    width: 80%;
+    padding: .5rem;
+    display: block;
+    margin: 0 auto .5rem;
+    border: none;
+    border-bottom: 1px solid gray;
+    outline: none;
+    transition: all .5s;
+  }
+
+  &__input:focus {
+    border-bottom: 1px solid $primary-color;
+  }
+
+}
+

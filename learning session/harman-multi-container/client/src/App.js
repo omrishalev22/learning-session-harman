@@ -1,29 +1,38 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import OtherPage from './OtherPage';
-import Fib from './Fib';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
+import SearchSection from './sections/SearchSection';
+import AddSection from "./sections/AddSection";
+import socketIOClient from "socket.io-client";
+
+const socket = socketIOClient("/");
 
 class App extends Component {
-  render() {
-    return (
-      <Router>
-        <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Welcome to React</h1>
-            <Link className="nav-bar" to="/">Home</Link>
-            <Link className="nav-bar" to="/otherpage">Other Page</Link>
-          </header>
-          <div>
-            <Route exact path="/" component={Fib} />
-            <Route path="/otherpage" component={OtherPage} />
-          </div>
-        </div>
-      </Router>
-    );
-  }
+
+    render() {
+        return (
+            <Router>
+                <div className="App">
+                    <header className="header">
+                        <h1 className="header__title">Learning Session</h1>
+                    </header>
+
+                    <main className="main">
+                        <div className="row main__sections">
+                            <section className="col-1-of-2 search-section">
+                                <SearchSection socket={socket}/>
+                            </section>
+                            <section className="col-1-of-2  add-section">
+                                <AddSection socket={socket}/>
+                            </section>
+                        </div>
+
+                    </main>
+                    <footer className="footer"></footer>
+                </div>
+            </Router>
+        );
+    }
 }
 
 export default App;

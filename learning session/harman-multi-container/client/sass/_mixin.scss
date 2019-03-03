@@ -1,0 +1,14 @@
+@mixin centerElement {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin clearFix {
+  &::after {
+    content: "";
+    clear: both;
+    display: block;
+  }
+}
