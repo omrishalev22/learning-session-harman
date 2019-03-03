@@ -45,7 +45,6 @@ App, body, html {
 
 .main {
   height: 50vh;
-  clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%);
   position: relative;
   text-align: center;
   color: black;
@@ -90,7 +89,6 @@ App, body, html {
 
 .footer {
   background-image: linear-gradient(to right bottom, #315790, #447fae, #66a8c9, #93d0e2, #c6f8fd);
-  height: 22vh;
   padding: 5rem 0;
   position: absolute;
   bottom: 0;
@@ -127,7 +125,7 @@ App, body, html {
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
-  border-radius: 5%;
+  border-radius: 10%;
   box-shadow: 0.5rem 0.5rem 2rem rgba(0, 0, 0, 0.4); }
   .btn:not(:last-child) {
     margin-right: 1rem; }
@@ -161,3 +159,35 @@ App, body, html {
 
 .form__input:focus {
   border-bottom: 1px solid #66A8C9; }
+
+.spinner-box {
+  position: relative; }
+  .spinner-box__item {
+    left: 1rem; }
+  .spinner-box__item:before {
+    content: "";
+    left: 2rem;
+    -webkit-animation-delay: 1s; }
+  .spinner-box__item:after {
+    content: "";
+    left: 4rem;
+    -webkit-animation-delay: 2s; }
+  .spinner-box__item, .spinner-box__item:after, .spinner-box__item:before {
+    border-radius: 50%;
+    position: absolute;
+    height: .8rem;
+    width: .8rem;
+    background-color: #436d85;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: linear;
+    animation-name: pulse;
+    animation-duration: 3s; }
+
+@keyframes pulse {
+  0% {
+    transform: translateY(-1rem); }
+  33.333333% {
+    transform: translateY(0); }
+  100% {
+    transform: translateY(0); } }

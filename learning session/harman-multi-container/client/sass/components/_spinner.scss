@@ -1,0 +1,51 @@
+.spinner-box {
+  position: relative;
+
+  &__item {
+    left: 1rem;
+
+  }
+
+  &__item:before {
+    content: "";
+    left: 2rem;
+    -webkit-animation-delay: 1s;
+  }
+
+  &__item:after {
+    content: "";
+    left: 4rem;
+    -webkit-animation-delay: 2s;
+
+  }
+
+  &__item, &__item:after, &__item:before {
+    border-radius: 50%;
+    position: absolute;
+    height: .8rem;
+    width: .8rem;
+    background-color: $primary-color-dark;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: linear;
+    animation-name: pulse;
+    animation-duration: 3s;
+  }
+
+}
+
+@keyframes pulse {
+
+  0% {
+    transform: translateY(-1rem);
+  }
+
+  33.333333% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(0);
+    // makes animation pause wait for next two loaders to finish
+  }
+}
