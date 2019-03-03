@@ -66,12 +66,12 @@ public class RedisConfig {
 
     @Bean
     ChannelTopic searchRequestTopic() {
-        return new ChannelTopic("insert");
+        return new ChannelTopic("SEARCH");
     }
 
     @Bean
     ChannelTopic searchResultTopic() {
-        return new ChannelTopic("values");
+        return new ChannelTopic("SEARCH_RES");
     }
 
 }

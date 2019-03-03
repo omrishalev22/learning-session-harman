@@ -43,12 +43,14 @@ public class RedisMessageSubscriber implements MessageListener {
 
             List<Pearl> pearls = pearlRepository.findByName(message.toString());
             if (pearls == null || pearls.isEmpty()) {
-                con.hSet("values".getBytes(), message.getBody(), "שומר על זכות השתיקה".getBytes());
+//                con.hSet("values".getBytes(), message.getBody(), "שומר על זכות השתיקה".getBytes());
+                con.publish("SEARCH_RES".getBytes(), "שומר על זכות השתיקה".getBytes());
                 log.info("Value set: name:" + new String(message.getBody()) + " is silent!!!");
                 return;
             }
             for (Pearl pearl : pearls) {
-                con.hSet("values".getBytes(), message.getBody(), pearl.getPearl().getBytes());
+//                con.hSet("values".getBytes(), message.getBody(), pearl.getPearl().getBytes());
+                con.publish("SEARCH_RES".getBytes(), pearl.getPearl().getBytes());
                 log.info("Value set: name:" + new String(message.getBody()) + " message:"+pearl.getPearl());
             }
 
