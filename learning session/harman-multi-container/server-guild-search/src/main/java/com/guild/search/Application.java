@@ -7,8 +7,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
+//@ComponentScan("com.guild.search")
 public class Application {
 
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -22,9 +25,11 @@ public class Application {
 	public CommandLineRunner demo(PearlRepository repository) {
 		return (args) -> {
 			if (repository.count() == 0) {
-				init(repository);
+				loadDb(repository);
 				// save a couple of Pearls
 			}
+
+			//the lines below are there just for fun - they kind of test the pearls repository
 
 			// fetch all Pearls
 			log.info("Pearls found with findAll():");
@@ -44,19 +49,14 @@ public class Application {
 					});
 
 			// fetch Pearls by last name
-			log.info("Pearl found with findByLastName('Bauer'):");
+			log.info("Pearl found with findByLastName('omri'):");
 			log.info("--------------------------------------------");
-			repository.findByName("Bauer").forEach(bauer -> {
-				log.info(bauer.toString());
-			});
-			// for (Pearl bauer : repository.findByLastName("Bauer")) {
-			// 	log.info(bauer.toString());
-			// }
+			repository.findByName("omri").forEach(pearl -> log.info(pearl.toString()));
 			log.info("");
 		};
 	}
 
-	private void init(PearlRepository repository) {
+	private void loadDb(PearlRepository repository) {
 		repository.save(new Pearl("omri", "מה זה הרעש הזה? רון? חאלס עם המטבעות פוקר האלה, מה יהיה ענת עם ההקלדות, מה זה המוזיקה הזאת"));
 		repository.save(new Pearl("ido", "טוב אני הולך, הייתי נשאר אבל לא בא לי - הוד השרון שולטת"));
 		repository.save(new Pearl("raz", "רז מה הזמנת לאכול? פיאנו פיאנו סניף חדרה"));

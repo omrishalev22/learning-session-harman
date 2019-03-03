@@ -13,6 +13,9 @@ services:
       - '5432:5432'
   redis:
     image: 'redis:latest'
+    ports:
+      - '6379:6379'
+
   api:
     restart: always
     build:
@@ -49,3 +52,16 @@ services:
     volumes:
       - /app/node_modules
       - ./worker:/app
+#  search:
+#    restart: always
+#    build:
+#      dockerfile: Dockerfile
+#      context: ./server-guild-search
+#    environment:
+#      - REDIS_HOST=redis
+#      - REDIS_PORT=6379
+#      - PGUSER=postgres
+#      - PGHOST=postgres
+#      - PGDATABASE=postgres
+#      - PGPASSWORD=postgres_password
+#      - PGPORT=5432
