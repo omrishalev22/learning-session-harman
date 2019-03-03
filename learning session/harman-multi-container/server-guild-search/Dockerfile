@@ -6,14 +6,6 @@ COPY pom.xml /tmp/
 COPY src /tmp/src/
 WORKDIR /tmp/
 
-ENV REDIS_HOST redis
-ENV REDIS_PORT 6379
-ENV PGUSER postgres
-ENV PGHOST postgres
-ENV PGDATABASE postgres
-ENV PGPASSWORD postgres_password
-ENV PGPORT 5432
-
 RUN mvn package -DskipTests
 
 FROM openjdk:8-jdk-alpine
