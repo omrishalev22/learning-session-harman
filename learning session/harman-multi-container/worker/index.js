@@ -1,10 +1,10 @@
-const keys = require('./keys');
+const KEYS = require('./keys');
 
 const redis = require('redis');
 
 const redisClient = redis.createClient({
-    host: keys.redisHost,
-    port: keys.redisPort,
+    host: KEYS.redisHost,
+    port: KEYS.redisPort,
     retry_strategy: () => 1000
 });
 const subscriber = redisClient.duplicate();
@@ -40,11 +40,11 @@ subscriber.on('message', (channel, payload) => {
     if (channel === keys.channels.ADD) {
         let parsePayload = JSON.parse(payload);
         insertNewValue(parsePayload);
-        publisher.publish(keys.channels.ADD_RES, parsePayload.name);
+        publisher.publish(KEYS.channels.ADD_RES, parsePayload.name);
     } else {
-        publisher.publish(keys.channels.SEARCH_RES, getMemberPhrase(payload));
+        publisher.publish(KEYS.channels.SEARCH_RES, getMemberPhrase(payload));
     }
 });
 
-subscriber.subscribe(keys.channels.SEARCH);
-subscriber.subscribe(keys.channels.ADD);
+subscriber.subscribe(KEYS.channels.SEARCH);
+subscriber.subscribe(KEYS.channels.ADD);
