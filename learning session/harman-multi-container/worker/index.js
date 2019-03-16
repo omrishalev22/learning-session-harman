@@ -37,7 +37,7 @@ function getMemberPhrase(teamMemberName) {
 }
 
 subscriber.on('message', (channel, payload) => {
-    if (channel === keys.channels.ADD) {
+    if (channel === KEYS.channels.ADD) {
         let parsePayload = JSON.parse(payload);
         insertNewValue(parsePayload);
         publisher.publish(KEYS.channels.ADD_RES, parsePayload.name);

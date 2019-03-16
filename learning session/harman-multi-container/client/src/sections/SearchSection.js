@@ -80,11 +80,8 @@ class SearchSection extends Component {
             );
 
         } else {
-            entries.push(<div className="results__item ul-small-margin-bottom" key={this.state.userInput}>
-                <div className="spinner-box">
-                    <span className="spinner-box__item"></span>
-                </div>
-            </div>);
+            entries.push(<div className="results__item ul-small-margin-bottom" key={this.state.userInput}>No Results
+                Yet</div>);
         }
 
         return entries
